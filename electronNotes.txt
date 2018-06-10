@@ -1,0 +1,69 @@
+Electron
+main process - process that runs package.json's main script
+	there's only 1 running.
+renderer process - Each web page runs own process
+process comparison
+	main process creates web pages by making 'BrowserWindow' instances
+	BrowserWindow instance(s) runs web page in own renderer process.
+	*main process manages web pages and corresponding renderer processes. 
+	renderer process(s) are isolated and only care for, web page running in it.
+.	[main process]--makes--
+	[BrowserWindow(s)]--runs webPages via--
+	[renderer]--cares only for--
+	[web page]
+	in web pages
+	GUI APIs not allowed
+		cause, mnging native GUI resources in WP is sec. risk.
+		If want to, renderer must talk w/ main process to do ops.
+	Communication between Main and Renderer
+		ipcRenderer and ipcMain -- sending messages, 
+		remote -- RPC style communication.
+			exposes APIs only available on main process.
+.	
+Chromium to display pages.
+	+ multi-process arch.
+web pages access to native resources, unlike Normal Browsers in sand boxed env.
+	w/ the help of NodeJS.
+.
+*documentation each API will state which process can be used from.
+Using NodeJS APIs
+1) All Node.js available
+	security implications if you ever attempt to load remote content.
+	https://electronjs.org/docs/tutorial/security
+2) can use Node.js modules
+	Native Node.js modules need to be compiled  (400 of ~650k)
+	https://electronjs.org/docs/tutorial/using-native-node-modules
+.
+Best way to think of GUI aspect.
+doesn't mean Electron is a JavaScript binding to (GUI) libraries.
+Electron uses web pages as its GUI, 
+Think as minimal Chromium browser, controlled by JavaScript.
+.
+electron.app - lifecycle
+electron.BrowserWindow - windows
+.
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
