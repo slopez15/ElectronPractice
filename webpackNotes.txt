@@ -1,0 +1,187 @@
+Used Webpack before and covered it but forgot most of it.
+Will be going through its documentation more than practice videos. Videos will be skimmed.
+Webpack module bundler integrates loaders, bundlers, etc. Awesome List found here: https://github.com/webpack-contrib/awesome-webpack
+Why do this? - Want to be able to create from start to finish, be able to understand common boilerplates and repos like cerate-react-app, and to only install/add features that we need.
+  Now webpack bundles modules that we use, but what is on the computer when developing may be another thing to keep in mind.
+  May use boilerplate and remove what I don't use (package.json, webpack.config.js, (packages, loaders, settings, etc), etc.)
+Than, will go over commonly imported modules like Babel.
+Electron may already have common ES features and Nodejs covers many ES features except possibly classes -- seems many ES features integrated, but not sure which/rules for integrating--it comes down to developers tbh-- I'll probably ignore this noting.
+.
+Webpack Crash Course -- https://youtu.be/lziuNMk_8eQ
+Concepts -- https://webpack.js.org/concepts/
+Comparison -- https://webpack.js.org/comparison/
+
+The Manifest -- https://webpack.js.org/concepts/manifest/
+
+Getting Started -- https://webpack.js.org/guides/getting-started/
+Configuration Expanded Example -- https://webpack.js.org/configuration/
+.
+Bundling vs. Loading
+A tool like SystemJS (under the hood of JSPM), used to load and transpile modules at runtime IN THE browser. -- CLIENT
+Webpack, modules transpiled (via "loaders") and bundled BEFORE hitting the browser. -- SERVER (is this a 1 time thing? If so, may be better off in the server)
+PROS & CONS
+at runtime
+  bad overhead for larger sites (many modules)
+    may change this, as HTTP/2 will improve speed (server to client file transfer).
+      transpiling modules will always take longer when done client-side -- Note HTTP/2 doesn't change anything about that. (How will client side be any faster? I get multi-server)
+.
+Webpack
+::compiles JS modules; static module bundler.; internally builds a dependency graph -- maps every module your project needs.
+interface via CLI or API
+Configuration -- https://webpack.js.org/configuration/
+not require configuration file to bundle --has defaults; Since version 4.
+entry:  src/index
+output: dist/main.js (minified and optimized for production)
+--config == different config file if needed.
+.
+Core Concepts:
+Entry (1+ entries)
+  default: ./src/index.js
+  which module to build out dependency graph
+  Design: 1. But if doing multiple, rule of thumb: for each HTML document use exactly one entry point.
+    Do? separate dependency graphs
+    Why? server is going to fetch a new HTML document for you.
+    Tip: CommonsChunkPlugin for bundle shared app code.
+.
+Output
+  defaults: ./dist/main.js -- {main} output otherwise named.
+  where to emit bundles and how to name
+  Note: can 2+ entry points, but only 1 output
+  (output.filename & output.path)
+.
+Loaders
+  default: *Native JS out of the box.
+  convert other files into valid modules.
+  2 purposes (modules.rules.test & modules.rules.test)
+    1. test -- which file(s) be transformed.
+    2. use  -- which loader be used for transforming.
+  tells webpack's compiler the following:
+    "when come across pattern in require()/import, use loader to transform it before adding to bundle."
+  3 ways to use loaders:   https://webpack.js.org/concepts/loaders/
+    1. Configuration (recommended): Specify in webpack.config.js
+    2. Inline: Specify in each import.
+    3. CLI: Specify in shell command.
+  Pattern/Regex for module.rules.test
+    see JS regex cheat sheet: https://www.w3schools.com/Jsref/jsref_obj_regexp.asp
+.
+Plugins
+  tasks: optimization, assets management, and injecting environment variables.
+  plugin interface: https://webpack.js.org/api/plugins/
+    how to use and extend webpacks capabilities
+    compilation events / access to compiler whole time.
+    writing a plugin: https://webpack.js.org/contribute/writing-a-plugin/
+    ...
+  Since can use plugin multiple times (in config for diff purposes), need to create an instance.
+  List: https://webpack.js.org/plugins/
+  Use Cases: https://webpack.js.org/concepts/plugins/
+.
+Other: mode, configuration, modules, etc.
+Mode:
+  default: production
+  enables webpack's built-in optimizations that correspond to each environment.
+  mode:  -- https://webpack.js.org/concepts/mode/
+    1. 'development,
+    2. 'production' or
+    3. 'none'
+    process.env.NODE_ENV = {modeValue}
+    also enables certain plugins respectively
+  //If want to change behavior according to mode; export a function instead of an object:
+    *see webpack.config.js part2 example below
+.
+Browser Compatibility
+  supports all browsers that are ES5-compliant (IE8 and below are not supported).
+  webpack needs Promise for import() and require.ensure().
+  If want to support older browsers, load a polyfill before using these expressions.
+.
+Targets
+  Because JS can be written for server and client, webpack offers multiple deployment targets.
+  see webpack.config.js example.
+  Resources
+    compare-webpack-target-bundles: A great resource for testing and viewing different webpack targets. Also great for bug reporting. -- https://github.com/TheLarkInn/compare-webpack-target-bundles
+    Boilerplate of Electron-React Application: A good example of a build process for electron's main process and renderer process. -- https://github.com/chentsulin/electron-react-boilerplate
+.
+====================webpack.config.js====================
+const path = require('path');
+
+const target1 = {
+  entry: './path/to/my/entry/file.js',        //ENTRY
+  output: {                                   //OUTPUT
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'my-first-webpack.bundle.js'
+  },
+  module: {
+    rules: [
+      { test: /\.txt$/, use: 'raw-loader' }.  //LOADERS
+      { test: /\.css$/, use: 'css-loader' }.
+    ]
+  },
+  plugins: [                                  //PLUGINS
+    new HtmlWebpackPlugin({template: './src/index.html'})
+  ],
+  mode: 'production',                         //MODE
+};
+module.exports = {target1, target2}; //otherwise module.exports = {//settings}; //equal target1
+============================== =PART 2= ==============================
+module.exports = (env, argv) => { //MODE BEHAVIOR
+
+  if (argv.mode === 'development') {
+    target1.devtool = 'source-map';
+  }
+
+  if (argv.mode === 'production') {
+    //...
+  }
+
+  return target1;
+};
+//If want to change behavior according to mode; export a function instead of an object:
+============================================================
+.
+--Crash Course--
+Code Splitting
+Loaders (CSS, SASS, JSX(JS Syntax eXtension))
+  *(to use code other than Native JS, as by default)
+  transform other resources into JS.
+  Popular Ones: CSS & Style, SASS & LESS, JSX (React), Babel, Coffee, TypeScript(JS superset),(template loaders) EJS, PUG/jade, HandleBars, json
+  This is an important reason to have it, otherwise no need for webpack.
+  Talks about the new coding syntax loaders allow.
+Clever Parsing (require ("./temp/" + name + ".jade") )
+  *(expressions in dependencies)
+Plugins
+  ...
+installing
+npm install -g webpack
+webpack-dev-server //take gen code and loads into localhost browser
+.
+index.html
+<script src="bundle.js" ></script> //imports output file of webpack
+webpack flag
+  --watch == hot reloading;
+    but doesn't keep in mind of rebuilding. see webpack-dev-server.
+.
+webpack-dev-server
+  "start": "webpack-dev-server --entry ./sourceFile --output-filename ./outputBundleFile.js"
+...Talks about the new coding syntax loaders allow.
+    see Loaders inline option.
+.
+====================.GETTING STARTED ====================
+
+
+.
+============================================================
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
