@@ -1,0 +1,6 @@
+[submodule "electron-api-demos"]
+	path = electron-api-demos
+	url = https://github.com/electron/electron-api-demos.git
+[submodule "electron-quick-start"]
+	path = electron-quick-start
+	url = https://github.com/electron/electron-quick-start
