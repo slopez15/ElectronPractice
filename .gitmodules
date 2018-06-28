@@ -4,3 +4,6 @@
 [submodule "electron-quick-start"]
 	path = electron-quick-start
 	url = https://github.com/electron/electron-quick-start
+[submodule "electron-poc-first-app-boilerplated"]
+	path = electron-poc-first-app-boilerplated
+	url = https://gitlab.com/slopez15/electron-poc-first-app-boilerplated
